@@ -24,7 +24,7 @@ app.get('/add/:nr1(\\d+)/:nr2(\\d+)', (req, res) => {
     const n1 = +req.params.nr1;
     const n2 = +req.params.nr2;
     const sum = (n1 + n2).toString();
-  
+
     if (sum == 'NaN') {
         res.statusMessage = "Bad Request";
         res.status(400).end();
@@ -58,7 +58,7 @@ app.get('/multiply/:nr1(\\d+)/:nr2(\\d+)', (req, res) => {
     const n2 = +req.params.nr2;
     const mul = (n1 * n2).toString();
 
-    if (mul== 'NaN') {
+    if (mul == 'NaN') {
         res.statusMessage = "Bad Request";
         res.status(400).end();
     } else {
@@ -94,9 +94,20 @@ app.get('/memory/clear', (req, res) => {
 });
 
 app.get('/memory/recall', (req, res) => {
-    if(vector.length === 0) res.send("Nothing here");
+    if (vector.length === 0) res.send("Nothing here.");
     else res.send("The last thing I remember is " + vector[vector.length - 1].result) + ".";
     console.log(vector);
+});
+
+app.get('/memory/recall/:pos(\\d+)', (req, res) => {
+    const position = +req.params.pos;
+    const len = vector.length;
+    if (len <= req.params.pos) {
+        res.send("You expect too much from me.");
+    } else { 
+        res.send(`I recall the result in position ${position} is ${vector[len - position].result}.`); 
+    }
+   
 });
 
 
