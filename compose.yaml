@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  calculator:
+    image: calculator-adina
+    ports:
+      - "2000:80"
+      
+  mysql:
+    image: mysql/mysql-server:latest
+    ports:
+      - "3000:80"
+    
+ 
+      
