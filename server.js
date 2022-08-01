@@ -49,6 +49,8 @@ sequelize.authenticate().then(
 
         Operation.sync().then(() => {
 
+            //add
+
             app.get('/add/:nr1(\\d+)/:nr2(\\d+)', (req, res) => {
 
                 const n1 = +req.params.nr1;
@@ -89,7 +91,49 @@ sequelize.authenticate().then(
                 }
             });
 
+            //mul
 
+            app.get('/multiply/:nr1(\\d+)/:nr2(\\d+)', (req, res) => {
+
+                const n1 = +req.params.nr1;
+                const n2 = +req.params.nr2;
+                const mul = (n1 * n2).toString();
+            
+                if (mul == 'NaN') {
+                    res.statusMessage = "Bad Request";
+                    res.status(400).end();
+                } else {
+                    res.send(mul);
+                    Operation.create({ op: "mul", a: n1, b: n2, result: mul}).then(
+                        (mul) => {
+                            console.log("Inmultire cu rezultatul " + mul.result);
+                        }
+                    );
+                }
+            });
+
+            //div
+
+            app.get('/divide/:nr1(\\d+)/:nr2(\\d+)', (req, res) => {
+
+                const n1 = +req.params.nr1;
+                const n2 = +req.params.nr2;
+                const div = (n1 / n2).toString();
+            
+                if (div == 'NaN' || div == 'Infinity') {
+                    res.statusMessage = "Bad Request";
+                    res.status(400).end();
+                } else {
+                    res.send(div);
+                    Operation.create({ op: "div", a: n1, b: n2, result: div}).then(
+                        (div) => {
+                            console.log("Impartire cu rezultatul " + div.result);
+                        }
+                    );
+                }
+            });
+
+            
 
 
         });
@@ -101,43 +145,6 @@ sequelize.authenticate().then(
     }
 );
 
-
-
-
-
-app.get('/multiply/:nr1(\\d+)/:nr2(\\d+)', (req, res) => {
-
-    const n1 = +req.params.nr1;
-    const n2 = +req.params.nr2;
-    const mul = (n1 * n2).toString();
-
-    if (mul == 'NaN') {
-        res.statusMessage = "Bad Request";
-        res.status(400).end();
-    } else {
-        res.send(mul);
-        vector.push(memFactory('mul', n1, n2, mul));
-        console.log(vector);
-
-    }
-});
-
-app.get('/divide/:nr1(\\d+)/:nr2(\\d+)', (req, res) => {
-
-    const n1 = +req.params.nr1;
-    const n2 = +req.params.nr2;
-    const div = (n1 / n2).toString();
-
-    if (div == 'NaN' || div == 'Infinity') {
-        res.statusMessage = "Bad Request";
-        res.status(400).end();
-    } else {
-        res.send(div);
-        vector.push(memFactory('div', n1, n2, div));
-        console.log(vector);
-
-    }
-});
 
 app.get('/memory/clear', (req, res) => {
 
