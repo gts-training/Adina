@@ -16,19 +16,13 @@ sequelize.authenticate().then(
     () => {
         console.log('Connection has been established successfully.');
 
-        const User = sequelize.define('User', {
-            // Model attributes are defined here
-            firstName: {
-                type: DataTypes.STRING,
-                allowNull: false
-            },
-            lastName: {
-                type: DataTypes.STRING
-                // allowNull defaults to true
-            }
-        }, {
-            // Other model options go here
+        app.get('/', (req, res) => {
+            console.log('Homepage up');
+            res.send('Hello, human! Welcome to the Happy Calculator!');
         });
+
+
+
 
         const Operation = sequelize.define('Operation', {
             // Model attributes are defined here
@@ -37,104 +31,79 @@ sequelize.authenticate().then(
                 allowNull: false
             },
             a: {
-                type: DataTypes.NUMBER,
+                type: DataTypes.FLOAT,
                 allowNull: false
+
             },
             b: {
-                type: DataTypes.NUMBER,
+                type: DataTypes.FLOAT,
                 allowNull: false
+
             },
             result: {
-                type: DataTypes.NUMBER,
+                type: DataTypes.FLOAT,
                 allowNull: false
             }
-        }, {
-            // Other model options go here
         });
 
-        User.sync().then(() => {
-            // Create a new user
-            User.create({ firstName: "John", lastName: "Doe" }).then(
-                (jane) => {
-                    console.log("Jane's auto-generated ID:", jane.id);
-                }
-            );
-
-        });
 
         Operation.sync().then(() => {
-            Operation.create({op:"add", a: 2, b: 3, result: 6}).then(
-                (add) => {
-                    console.log("Primul add dintre " + add.a + " si "+ add.b + `care este ${add.result}`);
+
+            app.get('/add/:nr1(\\d+)/:nr2(\\d+)', (req, res) => {
+
+                const n1 = +req.params.nr1;
+                const n2 = +req.params.nr2;
+                const sum = (n1 + n2).toString();
+
+                if (sum == 'NaN') {
+                    res.statusMessage = "Bad Request";
+                    res.status(400).end();
+                } else {
+                    res.send(sum);
+                    Operation.create({ op: "add", a: n1, b: n2, result: sum }).then(
+                        (add) => {
+                            console.log("Adunare cu rezultatul " + add.result);
+                        }
+                    );
                 }
-            );
-        });
+            });
 
+            //substract
+
+            app.get('/substract/:nr1(\\d+)/:nr2(\\d+)', (req, res) => {
+
+                const n1 = +req.params.nr1;
+                const n2 = +req.params.nr2;
+                const dif = (n1 - n2).toString();
             
+                if (dif == 'NaN') {
+                    res.statusMessage = "Bad Request";
+                    res.status(400).end();
+                } else {
+                    res.send(dif);
+                    Operation.create({ op: "dif", a: n1, b: n2, result: dif }).then(
+                        (dif) => {
+                            console.log("Scadere cu rezultatul " + dif.result);
+                        }
+                    );
+                }
+            });
 
-        // de aici incolo, User va fi portalul meu catre userii din db
+
+
+
+        });
 
     },
     (error) => {
         console.error('Unable to connect to the database:', error);
 
-        exit();
     }
 );
 
 
 
 
-
-// const memFactory = (operation, a, b, result) => {
-//     return {
-//         operation,
-//         a,
-//         b,
-//         result
-//     };
-// };
-
-let vector = [];
-
-//request la homepage
-app.get('/', (req, res) => {
-    console.log('GET pe homepage');
-    res.send('Hello, human! Welcome to the Happy Calculator!');
-});
-
-app.get('/add/:nr1(\\d+)/:nr2(\\d+)', (req, res) => {
-
-    const n1 = +req.params.nr1;
-    const n2 = +req.params.nr2;
-    const sum = (n1 + n2).toString();
-
-    if (sum == 'NaN') {
-        res.statusMessage = "Bad Request";
-        res.status(400).end();
-    } else {
-        res.send(sum);
-        vector.push(memFactory('add', n1, n2, sum));
-        console.log(vector);
-    }
-});
-
-app.get('/substract/:nr1(\\d+)/:nr2(\\d+)', (req, res) => {
-
-    const n1 = +req.params.nr1;
-    const n2 = +req.params.nr2;
-    const dif = (n1 - n2).toString();
-
-    if (dif == 'NaN') {
-        res.statusMessage = "Bad Request";
-        res.status(400).end();
-    } else {
-        res.send(dif);
-        vector.push(memFactory('substract', n1, n2, dif));
-        console.log(vector);
-
-    }
-});
 
 app.get('/multiply/:nr1(\\d+)/:nr2(\\d+)', (req, res) => {
 
