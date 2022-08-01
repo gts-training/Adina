@@ -1,11 +1,10 @@
 FROM node:16-alpine
 
-RUN mkdir /proiect
-RUN chown -R node:node /proiect
+RUN mkdir /calculator
+RUN chown -R node:node /calculator
 
-WORKDIR /proiect
+WORKDIR /calculator
 
-COPY . /proiect/
-
-EXPOSE 4321
-CMD ["node", "server.js"]
+COPY . /calculator
+RUN npm install
+CMD ["npm", "start"]

@@ -1,15 +1,15 @@
 version: '3'
-
 services:
+  mysql:
+    image: mysql/mysql-server
+    environment:
+      MYSQL_DATABASE: calculator
+      MYSQL_USER: user
+      MYSQL_PASSWORD: test
+      MYSQL_ROOT_PASSWORD: test
+    ports:
+    - 7000:3306
   calculator:
     image: calculator-adina
     ports:
-      - "2000:80"
-      
-  mysql:
-    image: mysql/mysql-server:latest
-    ports:
-      - "3000:80"
-    
- 
-      
+    - 8000:1234

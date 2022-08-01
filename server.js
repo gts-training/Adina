@@ -1,6 +1,64 @@
 
 const express = require('express');
 const app = express();
+const port = 1234;
+
+
+const sequelize = new Sequelize('calculator', 'user', 'test', {
+    host: 'mysql',
+    dialect: 'mysql',
+});
+
+
+sequelize.authenticate().then(
+    () => {
+        console.log('Connection has been established successfully.');
+
+        const User = sequelize.define('User', {
+            // Model attributes are defined here
+            firstName: {
+            type: DataTypes.STRING,
+            allowNull: false
+            },
+            lastName: {
+            type: DataTypes.STRING
+            // allowNull defaults to true
+            }
+        }, {
+            // Other model options go here
+        });
+
+
+    
+        User.sync().then(() => {
+            // Create a new user
+
+            // "aici" in then-ul modelului
+    
+    
+    
+    
+            User.create({ firstName: "John", lastName: "Doe" }).then(
+                (jane) => {
+                    console.log("Jane's auto-generated ID:", jane.id);
+                }
+            );
+        });
+
+
+        // de aici incolo, User va fi portalul meu catre userii din db
+
+    },
+    (error) => {
+        console.error('Unable to connect to the database:', error);
+
+        exit();
+    }
+);
+
+
+
+
 
 const memFactory = (operation, a, b, result) => {
     return {
@@ -111,7 +169,7 @@ app.get('/memory/recall/:pos(\\d+)', (req, res) => {
 });
 
 
-const server = app.listen(4321, () => {
+const server = app.listen(port, () => {
     const host = server.address().address;
     const port = server.address().port;
     console.log('Nice, listening at http://%s%s', host, port);
