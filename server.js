@@ -1,7 +1,9 @@
 
-const express = require('express');
+const express = require("express");
+const { Sequelize, DataTypes } = require('sequelize');
 const app = express();
 const port = 1234;
+
 
 
 const sequelize = new Sequelize('calculator', 'user', 'test', {
@@ -17,34 +19,58 @@ sequelize.authenticate().then(
         const User = sequelize.define('User', {
             // Model attributes are defined here
             firstName: {
-            type: DataTypes.STRING,
-            allowNull: false
+                type: DataTypes.STRING,
+                allowNull: false
             },
             lastName: {
-            type: DataTypes.STRING
-            // allowNull defaults to true
+                type: DataTypes.STRING
+                // allowNull defaults to true
             }
         }, {
             // Other model options go here
         });
 
+        const Operation = sequelize.define('Operation', {
+            // Model attributes are defined here
+            op: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            a: {
+                type: DataTypes.NUMBER,
+                allowNull: false
+            },
+            b: {
+                type: DataTypes.NUMBER,
+                allowNull: false
+            },
+            result: {
+                type: DataTypes.NUMBER,
+                allowNull: false
+            }
+        }, {
+            // Other model options go here
+        });
 
-    
         User.sync().then(() => {
             // Create a new user
-
-            // "aici" in then-ul modelului
-    
-    
-    
-    
             User.create({ firstName: "John", lastName: "Doe" }).then(
                 (jane) => {
                     console.log("Jane's auto-generated ID:", jane.id);
                 }
             );
+
         });
 
+        Operation.sync().then(() => {
+            Operation.create({op:"add", a: 2, b: 3, result: 6}).then(
+                (add) => {
+                    console.log("Primul add dintre " + add.a + " si "+ add.b + `care este ${add.result}`);
+                }
+            );
+        });
+
+            
 
         // de aici incolo, User va fi portalul meu catre userii din db
 
@@ -60,14 +86,14 @@ sequelize.authenticate().then(
 
 
 
-const memFactory = (operation, a, b, result) => {
-    return {
-        operation,
-        a,
-        b,
-        result
-    };
-};
+// const memFactory = (operation, a, b, result) => {
+//     return {
+//         operation,
+//         a,
+//         b,
+//         result
+//     };
+// };
 
 let vector = [];
 
@@ -162,15 +188,13 @@ app.get('/memory/recall/:pos(\\d+)', (req, res) => {
     const len = vector.length;
     if (len < req.params.pos) {
         res.send("You expect too much from me.");
-    } else { 
-        res.send(`I recall the result in position ${position} is ${vector[len - position].result}.`); 
+    } else {
+        res.send(`I recall the result in position ${position} is ${vector[len - position].result}.`);
     }
-   
+
 });
 
 
-const server = app.listen(port, () => {
-    const host = server.address().address;
-    const port = server.address().port;
-    console.log('Nice, listening at http://%s%s', host, port);
+app.listen(port, () => {
+    console.log('server is up')
 });
