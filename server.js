@@ -113,47 +113,43 @@ sequelize.authenticate().then(
                             }
                         );
                     }
-                };
+                } else if(button == "MEMORY CLEAR"){
+                    Operation.destroy({
+                        where: {}
+                    });
+    
+                    res.send('I remember nothing.');
+                    console.log("Memory clear");
+                } else if(button == "MEMORY RECALL"){ //nu merge
+                    const last = Operation.findOne({ 
+                        order: [
+                            ['createdAt', 'DESC']
+                        ],
+                     },).then((rez) => {
+                        if(rez){
+                            res.send(`Last result was ${rez.result}`);
+                        console.log("Memory recall");
+                    }else{
+                        res.send("Nothing to see here");
+                        console.log("Memory recall failed");
+                    };
+                        
+                    },
+                     (error) => {
+                        console.error('Unable to recall: ', error);
+                     }
+                     );      
+                }
            
-            });
-
-            //clear
-            app.get('/memory/clear', (req, res) => {
-
-                Operation.destroy({
-                    where: {}
-                });
-
-                res.send('I remember nothing.');
-                console.log("Memory clear");
-            });
-
-
-            //recall
-
-            
-            app.get('/memory/recall',  (req, res) => {
-
-                const last = Operation.findOne({ 
-                    order: [
-                        ['createdAt', 'DESC']
-                    ],
-                 },).then((rez) => {
-                    if(rez){
-                        res.send(`Last result was ${rez.result}`);
-                    console.log("Memory recall");
-                }else{
-                    res.send("Nothing to see here");
-                    console.log("Memory recall failed");
-                };
-                    
-                },
-                 (error) => {
-                    console.error('Unable to recall: ', error);
-                 }
-                 );      
 
             });
+
+
+            // app.get('/memory/recall',  (req, res) => {
+
+                
+
+            // });
         });
 
     },
